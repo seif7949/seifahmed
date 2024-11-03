@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة تكلفة الشغل</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-image: url('https://i.ibb.co/k4Sr8Lh/your_image_name.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            direction: rtl;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+            text-align: center;
+        }
+
+        h1 {
+            color: gold;
+        }
+
+        .note {
+            color: black;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input {
+            width: calc(100% - 20px);
+            padding: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+            height: 40px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-container {
+            margin-top: 20px;
+        }
+
+        .result-input {
+            width: calc(100% - 20px);
+            padding: 5px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            background-color: #f0f8ff;
+            color: green;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+            cursor: not-allowed;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            height: 40px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* تنسيق معلومات الشركة */
+        .company-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #333;
+            text-align: right;
+        }
+
+        .company-info h2 {
+            color: #007bff;
+            margin: 0 0 10px;
+        }
+
+        .company-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+    </style>
+    <script>
+        function calculate() {
+            const length2 = parseFloat(document.getElementById('length2').value);
+            const width2 = parseFloat(document.getElementById('width2').value);
+            const price = parseFloat(document.getElementById('price').value);
+
+            if (!isNaN(price) && price > 0 && !isNaN(length2) && !isNaN(width2)) {
+                const area1 = 122 * 244;
+                const costPerCm = price / area1;
+                const area2 = length2 * width2;
+                const totalCost = area2 * costPerCm;
+                document.getElementById('result').value = `${totalCost.toFixed(2)} جنيه مصري`;
+            } else {
+                document.getElementById('result').value = 'يرجى إدخال قيم صحيحة!';
+            }
+        }
+
+        function downloadAsImage() {
+            const container = document.querySelector('.container');
+            html2canvas(container).then(canvas => {
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'التكلفة.png';
+                    link.click();
+                });
+            });
+        }
+
+        function shareOnWhatsApp() {
+            html2canvas(document.querySelector('.container')).then(canvas => {
+                canvas.toBlob(blob => {
+                    const imageURL = URL.createObjectURL(blob);
+                    const clientName = document.getElementById('clientName').value || "العميل";
+                    const message = `اسم العميل: ${clientName}\nطول الشغلانة: ${document.getElementById('length2').value} سم\nعرض الشغلانة: ${document.getElementById('width2').value} سم\nسعر التكلفة: ${document.getElementById('result').value}`;
+                    const encodedMessage = encodeURIComponent(message);
+                    window.open(`https://wa.me/?text=${encodedMessage}`);
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>حاسبة تكلفة الشغل</h1>
+        <div class="note">(يرجى العلم سعر اللوح يتغير مع زيادة أسعار الألواح المعدنية)</div>
+
+        <label for="clientName">اسم العميل:</label>
+        <input type="text" id="clientName" required>
+
+        <input type="number" id="length1" value="122" class="hidden" readonly>
+        <input type="number" id="width1" value="244" class="hidden" readonly>
+
+        <label for="price">سعر اللوح (وحدة):</label>
+        <input type="number" id="price" required>
+
+        <label for="length2">طول الشغلانه (سم):</label>
+        <input type="number" id="length2" required>
+
+        <label for="width2">عرض الشغلانه (سم):</label>
+        <input type="number" id="width2" required>
+
+        <button onclick="calculate()">احسب التكلفة</button>
+
+        <div class="result-container">
+            <label for="result">سعر التكلفة:</label>
+            <input type="text" id="result" class="result-input" readonly>
+        </div>
+
+        <button onclick="downloadAsImage()">تحميل كصورة</button>
+        <button onclick="shareOnWhatsApp()">مشاركة على واتساب</button>
+
+        <!-- معلومات الشركة -->
+        <div class="company-info">
+            <h2>بيانات الشركة</h2>
+            <p><strong>اسم الشركة:</strong> شركة MAZAYA STEEL لتقطيع الالواح المعدنيه</p>
+            <p><strong>رقم الهاتف:</strong> 01013265168</p>
+            <p><strong>العنوان:</strong> السماحية الكبري /مركز بلقاس/الدقهليه</p>
+        </div>
+    </div>
+</body>
+</html>
